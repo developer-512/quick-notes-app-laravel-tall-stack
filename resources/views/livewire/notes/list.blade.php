@@ -9,7 +9,8 @@ $get_notes = fn () => $this->notes = auth()->user()->notes()->where('content', '
 state(['notes'=>$get_notes,'editing' => null]);
 
 $edit=function (Notes $note){
-    $this->editing = $note;
+    $this->editing = null;
+    $this->dispatch('edit-this-note',$note->note_id);
     $this->get_notes();
 };
 $delete = function (Notes $note) {
@@ -73,13 +74,15 @@ on([
                         </x-slot>
                     </x-dropdown>
                 </div>
-                @if($note->is($editing))
-                    <livewire:notes.edit :note="$note" :key="$note->note_id" />
-                @else
-                    <p class="mt-4 text-lg text-gray-900">{{ $note->content }}</p>
+                    <p class="mt-4 text-lg text-gray-900">{!! $note->content !!}</p>
+                <hr>
                     <p class="mt-4 text-md text-gray-900">{{ $note->relevant_links }}</p>
+
+                @if(count($note->files)>0)
+                    <hr>
+                        <h3>Files:</h3>
                     <div class="files flex justify-between items-center">
-                        @if(count($note->files)>0)
+
                             @foreach($note->files as $file)
                                 <a href="{{ $file->download_url }}" title="{{$file->file_name}}" download>
                                     @if(in_array(\Illuminate\Support\Str::lower($file->extension),$images_extensions))
@@ -90,9 +93,10 @@ on([
 
                                 </a>
                             @endforeach
-                        @endif
+
                     </div>
-                @endif
+                    @endif
+
 
             </div>
         </div>

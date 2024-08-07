@@ -7,6 +7,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'public/assets/vendor/ckeditor5.js'
             ],
             refresh: true,
         }),

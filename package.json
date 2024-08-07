@@ -15,6 +15,9 @@
         "vite": "^5.0"
     },
     "dependencies": {
-        "@dasundev/livewire-dropzone-styles": "^1.0.8"
+        "@ckeditor/ckeditor5-adapter-ckfinder": "^42.0.2",
+        "@dasundev/livewire-dropzone-styles": "^1.0.8",
+        "ckeditor": "^4.12.1",
+        "ckeditor5": "^42.0.2"
     }
 }

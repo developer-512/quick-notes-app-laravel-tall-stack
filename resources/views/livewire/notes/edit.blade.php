@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use function Livewire\Volt\{rules, state,mount, usesFileUploads, placeholder};
 mount(function(){
     $this->content=$this->note->content??'';
+    $this->dispatch('contentUpdated', $this->content);
     $this->relevant_links=$this->note->relevant_links??'';
     $this->title= $this->note->title??'';
     foreach ($this->note->files as $file){
@@ -36,7 +37,10 @@ rules(['title' => 'nullable',
     'relevant_links' => 'nullable',
     'files.*' => 'nullable'
 ]);
-
+$updatedContent=function($value)
+{
+    $this->dispatch('contentUpdated', $value);
+};
 
 $update = function () {
     $this->authorize('update', $this->note);
@@ -76,12 +80,12 @@ $cancel = fn () => $this->dispatch('note-edit-canceled');
 ?>
 
 <div>
-    <form wire:submit="update" data-test="{{$edit_note}}">
+    <form wire:submit="update" >
         <input type="text" wire:model="title"
                placeholder="{{__('Note Title')}}"
                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm">
         <textarea rows="6"
-                  wire:model="content"
+                  id="editor1" wire:model.lazy="content"
                   placeholder="{{ __('What\'s on your mind?') }}"
                   class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm mt-4"
         ></textarea>
@@ -101,3 +105,14 @@ $cancel = fn () => $this->dispatch('note-edit-canceled');
         {{--        {{print_r($errors,true)}}--}}
     </form>
 </div>
+<script type="module">
+    // console.log(window.ckeditor);
+
+    window.ckeditorEdit.model.document.on( 'change:data', () => {
+    @this.set('content', window.ckeditorEdit.getData());
+
+    });
+    window.Livewire.on('note-updated', () => {
+        window.ckeditorEdit.setData('');
+    });});
+</script>

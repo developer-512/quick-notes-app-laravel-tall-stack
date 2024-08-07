@@ -29,7 +29,14 @@ class FilesController extends Controller
      */
     public function store(StoreFilesRequest $request)
     {
-        //
+        $directory = 'public/editor/files';
+        $file = $request->file('upload');
+        $fileName = $file->getClientOriginalName().'_'.time() . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs($directory, $fileName, 'public');
+
+        return response()->json([
+            'url' => asset('storage/' . $filePath)
+        ]);
     }
 
     /**
